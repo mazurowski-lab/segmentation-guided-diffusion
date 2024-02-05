@@ -2,7 +2,7 @@
 
 #### By [Nicholas Konz](https://nickk124.github.io/), [Yuwen Chen](https://scholar.google.com/citations?user=61s49p0AAAAJ&hl=en), [Haoyu Dong](https://scholar.google.com/citations?user=eZVEUCIAAAAJ&hl=en) and [Maciej Mazurowski](https://sites.duke.edu/mazurowski/).
 
-<img src='https://github.com/mazurowski-lab/segmentation-guided-diffusion/blob/main/figures/teaser.png' width='100%'>
+<img src='https://github.com/mazurowski-lab/segmentation-guided-diffusion/blob/main/figs/teaser.png' width='100%'>
 
 This is the code for our paper "Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models", where we introduce and simple yet powerful method for conditioning image-generating diffusion models on multiclass segmentation masks. Our method is considerably simpler and faster to train than existing methods (like the latent diffusion model ControlNet), and has much more precise anatomical conditioning due to completely operating in image space. In our paper, we show that this results in significantly better anatomical control and realism in generated images, especially in medical images with complex and detailed anatomical structures (such as fibroglandular tissue in breast MRI).
 
