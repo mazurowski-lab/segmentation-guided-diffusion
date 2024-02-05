@@ -1,0 +1,8 @@
+torch
+torchvision
+numpy
+matplotlib
+Pillow
+diffusers
+datasets
+tqdm
