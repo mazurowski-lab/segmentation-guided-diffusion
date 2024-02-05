@@ -4,7 +4,7 @@
 
 <img src='https://github.com/mazurowski-lab/segmentation-guided-diffusion/blob/main/figs/teaser.png' width='100%'>
 
-This is the code for our paper "Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models", where we introduce and simple yet powerful method for conditioning image-generating diffusion models on multiclass segmentation masks. Our method is considerably simpler and faster to train than existing methods (like the latent diffusion model ControlNet), and has much more precise anatomical conditioning due to completely operating in image space. In our paper, we show that this results in significantly better anatomical control and realism in generated images, especially in medical images with complex and detailed anatomical structures (such as fibroglandular tissue in breast MRI).
+This is the code for our paper "Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models", where we introduce a simple yet powerful method for conditioning image-generating diffusion models on multiclass segmentation masks. Our method is considerably simpler and faster to train than existing methods (like the latent diffusion model ControlNet), and has much more precise anatomical conditioning due to completely operating in image space. In our paper, we show that this results in significantly better anatomical control and realism in generated images, especially in medical images with complex and detailed anatomical structures (such as fibroglandular tissue in breast MRI).
 
 **Using this code, you can:**
 1. Train a segmentation-guided (or standard unconditional) diffusion model on your own dataset, with a wide range of options.
