@@ -56,7 +56,6 @@ def main(
     elif "eval" in mode:
         evalset_name = "test"
 
-    evalset_name = "val"
     print("using evaluation set: {}".format(evalset_name))
 
     config = TrainingConfig(
