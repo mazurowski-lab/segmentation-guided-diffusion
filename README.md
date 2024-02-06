@@ -1,5 +1,7 @@
 # Easy Segmentation-Guided Diffusion Models
 
+*Have images with corresponding segmentation masks? Easily train a diffusion model to learn to generate images conditioned on the masks.*
+
 #### By [Nicholas Konz](https://nickk124.github.io/), [Yuwen Chen](https://scholar.google.com/citations?user=61s49p0AAAAJ&hl=en), [Haoyu Dong](https://scholar.google.com/citations?user=eZVEUCIAAAAJ&hl=en) and [Maciej Mazurowski](https://sites.duke.edu/mazurowski/).
 
 <img src='https://github.com/mazurowski-lab/segmentation-guided-diffusion/blob/main/figs/teaser.png' width='100%'>
