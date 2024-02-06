@@ -12,7 +12,9 @@ This is the code for our paper "Anatomically-Controllable Medical Image Generati
 1. Train a segmentation-guided (or standard unconditional) diffusion model on your own dataset, with a wide range of options.
 2. Generate images from these models (or using our provided pre-trained models).
 
-Please follow the steps outlined below to do these.
+Please follow the steps outlined below to do these. 
+
+Also, check out our accompanying "**Synthetic Paired Breast MRI Dataset Release**" below!
 
 Thank you to Hugging Face's awesome [Diffusers](https://github.com/huggingface/diffusers) library for providing a helpful backbone for our code!
 
@@ -137,4 +139,4 @@ This will generate images conditioned on the segmentation masks in `MASK_FOLDER/
 ## Additional Options/Config
 Our code has further options for training and evaluation; run `python3 main.py --help` for more information. Further settings still can be changed under `class TrainingConfig:` in `training.py` (some of which are exposed as command-line options for `main.py`, and some of which are not).
 
-## Synthetic Dataset Release
+## Synthetic Paired Breast MRI Dataset Release
