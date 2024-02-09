@@ -1,12 +1,13 @@
 # Easy Segmentation-Guided Diffusion Models
 
-*Have images with corresponding segmentation masks? Easily train a diffusion model to learn to generate images conditioned on the masks.*
-
 #### By [Nicholas Konz](https://nickk124.github.io/), [Yuwen Chen](https://scholar.google.com/citations?user=61s49p0AAAAJ&hl=en), [Haoyu Dong](https://scholar.google.com/citations?user=eZVEUCIAAAAJ&hl=en) and [Maciej Mazurowski](https://sites.duke.edu/mazurowski/).
+
+[![arXiv Paper](https://img.shields.io/badge/arXiv-2402.05210-orange.svg?style=flat)](https://arxiv.org/abs/2402.05210)
+
 
 <img src='https://github.com/mazurowski-lab/segmentation-guided-diffusion/blob/main/figs/teaser.png' width='100%'>
 
-This is the code for our paper **"Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models"**, where we introduce a simple yet powerful training procedure for conditioning image-generating diffusion models on (possibly incomplete) multiclass segmentation masks. 
+This is the code for our paper [**"Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models"**](https://arxiv.org/abs/2402.05210), where we introduce a simple yet powerful training procedure for conditioning image-generating diffusion models on (possibly incomplete) multiclass segmentation masks. 
 
 Our method is considerably simpler and faster to train than existing segmentation-guided models (like the latent diffusion model ControlNet), and has much more precise anatomical conditioning due to completely operating in image space, especially for medical image datasets that are OOD from natural images. In our paper, we show that this results in significantly better anatomical control and realism in generated images, especially for medical images with complex and detailed anatomical structures (such as fibroglandular tissue in breast MRI).
 
@@ -23,6 +24,16 @@ Thank you to Hugging Face's awesome [Diffusers](https://github.com/huggingface/d
 ## Citation
 
 Please cite our paper if you use our code or reference our work:
+```bib
+@misc{konz2024anatomicallycontrollable,
+      title={Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models}, 
+      author={Nicholas Konz and Yuwen Chen and Haoyu Dong and Maciej A. Mazurowski},
+      year={2024},
+      eprint={2402.05210},
+      archivePrefix={arXiv},
+      primaryClass={eess.IV}
+}
+```
 
 ## 1) Package Installation
 First, run `pip3 install -r requirements.txt` to install the required packages.
