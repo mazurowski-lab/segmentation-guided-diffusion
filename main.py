@@ -156,7 +156,7 @@ def main(
     if config.segmentation_guided:
         preprocess_segmentation = transforms.Compose(
         [
-            transforms.Resize((config.image_size, config.image_size)),
+            transforms.Resize((config.image_size, config.image_size), interpolation=transforms.InterpolationMode.NEAREST),
             transforms.ToTensor(),
         ]
     )
