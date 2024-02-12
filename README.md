@@ -9,13 +9,11 @@
 
 This is the code for our paper [**"Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models"**](https://arxiv.org/abs/2402.05210), where we introduce a simple yet powerful training procedure for conditioning image-generating diffusion models on (possibly incomplete) multiclass segmentation masks. 
 
-#### Why use our model?
+### Why use our model?
 
-Our method excels over existing segmentation-models like (ControlNet) in both generated image quality and precise faithfulness to input segmentation masks for datasets that are out-of-distribution from natural images, such as medical images. This is due to keeping segmentation constraints in image space instead of some latent space, not requiring text annotations for images, and other reasons (please see Appendix C in our paper). Our method is also simple to use and train.
+Our method excels over existing segmentation-guided image generative models (like [ControlNet](https://github.com/lllyasviel/ControlNet)) for datasets that are out-of-distribution from natural images, such as medical images (please see our paper). In our paper, we show that this results in significantly better anatomical control and realism in generated images, especially for medical images with complex and detailed anatomical structures (such as fibroglandular tissue in breast MRI). Our method is also simple to use and train.
 
-In our paper, we show that this results in significantly better anatomical control and realism in generated images, especially for medical images with complex and detailed anatomical structures (such as fibroglandular tissue in breast MRI).
-
-Finally, our option *ablated-mask training* algorithm allows our model to condition on segmentation masks with missing classes, which is useful for medical images where segmentation masks may be incomplete or noisy. We also find that this improved anatomical realism of generated images even for the case of completely unconditional generation (empty input mask), due to this algorithm serving as a form of self-supervised learning of realistic anatomical structures (see Appendix B in our paper). We also used this feature to generate a synthetic paired breast MRI dataset, [shown below](https://github.com/mazurowski-lab/segmentation-guided-diffusion?tab=readme-ov-file#synthetic-paired-breast-mri-dataset-release).
+Additionally, our optional *ablated-mask training* algorithm allows our model to condition on segmentation masks with missing classes, which is useful for medical images where segmentation masks may be incomplete or noisy. This improves anatomical realism of generated images even for the case of completely unconditional generation (empty input mask), due to this algorithm serving as a form of self-supervised learning of realistic anatomical structures (see Appendix B in our paper). We also used this feature to generate a synthetic paired breast MRI dataset, [shown below](https://github.com/mazurowski-lab/segmentation-guided-diffusion?tab=readme-ov-file#synthetic-paired-breast-mri-dataset-release).
 
 **Using this code, you can:**
 1. Train a segmentation-guided (or standard unconditional) diffusion model on your own dataset, with a wide range of options.
@@ -23,7 +21,7 @@ Finally, our option *ablated-mask training* algorithm allows our model to condit
 
 Please follow the steps outlined below to do these. 
 
-Also, check out our accompanying "**Synthetic Paired Breast MRI Dataset Release**" below!
+Also, check out our accompanying [**Synthetic Paired Breast MRI Dataset Release**](https://github.com/mazurowski-lab/segmentation-guided-diffusion?tab=readme-ov-file#synthetic-paired-breast-mri-dataset-release) below!
 
 Thank you to Hugging Face's awesome [Diffusers](https://github.com/huggingface/diffusers) library for providing a helpful backbone for our code!
 
