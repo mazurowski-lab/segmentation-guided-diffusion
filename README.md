@@ -9,7 +9,7 @@
 
 This is the code for our paper [**"Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models"**](https://arxiv.org/abs/2402.05210), where we introduce a simple yet powerful training procedure for conditioning image-generating diffusion models on (possibly incomplete) multiclass segmentation masks. 
 
-####Why use our model?####
+#### Why use our model?
 
 Our method excels over existing segmentation-models like (ControlNet) in both generated image quality and precise faithfulness to input segmentation masks for datasets that are out-of-distribution from natural images, such as medical images. This is due to keeping segmentation constraints in image space instead of some latent space, not requiring text annotations for images, and other reasons (please see Appendix C in our paper). Our method is also simple to use and train.
 
