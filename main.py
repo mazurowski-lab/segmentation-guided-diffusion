@@ -18,6 +18,7 @@ from eval import evaluate_generation, evaluate_sample_many
 def main(
     mode,
     img_size,
+    num_img_channels,
     dataset,
     img_dir,
     seg_dir,
@@ -192,7 +193,7 @@ def main(
             )
 
     # define the model
-    in_channels = 1
+    in_channels = num_img_channels
     if config.segmentation_guided:
         assert config.num_segmentation_classes is not None
         assert config.num_segmentation_classes > 1, "must have at least 2 segmentation classes (INCLUDING background)" 
@@ -302,6 +303,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('--mode', type=str, default='train')
     parser.add_argument('--img_size', type=int, default=256)
+    parser.add_argument('--num_img_channels', type=int, default=1)
     parser.add_argument('--dataset', type=str, default="breast_mri")
     parser.add_argument('--img_dir', type=str, default="../../breast_mri_data/slicesubset")
     parser.add_argument('--seg_dir', type=str, default="../../breast_mri_data/prior_work_1k/segmentations2D")
@@ -330,6 +332,7 @@ if __name__ == "__main__":
     main(
         args.mode,
         args.img_size,
+        args.num_img_channels,
         args.dataset,
         args.img_dir,
         args.seg_dir,
