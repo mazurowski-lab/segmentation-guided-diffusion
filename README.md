@@ -186,8 +186,8 @@ segmentations
 │   └── ...
 ```
 
-### Dataset Citation
-If you use this data, please cite both our paper (see **Citation** above) and the original breast MRI dataset:
+### Dataset Citation and License
+If you use this data, please cite both our paper (see **Citation** above) and the original breast MRI dataset (below), and follow the [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) license.
 ```bib
 @misc{sahadata,
   author={Saha, Ashirbani and Harowicz, Michael R and Grimm, Lars J and Kim, Connie E and Ghate, Sujata V and Walsh, Ruth and Mazurowski, Maciej A},
