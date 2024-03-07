@@ -74,7 +74,7 @@ DATA_FOLDER
     └── ...
 ```
 
-If you have segmentation masks, please put them in a similar directory structure in a separate folder `MASK_FOLDER`, with a subdirectory `all` that contains the split subfolders, as shown below. **Each segmentation mask should have the same filename as its corresponding image in `DATA_FOLDER`, and should be saved with integer values starting at zero of 0, 1, 2, ...
+If you have segmentation masks, please put them in a similar directory structure in a separate folder `MASK_FOLDER`, with a subdirectory `all` that contains the split subfolders, as shown below. **Each segmentation mask should have the same filename as its corresponding image in `DATA_FOLDER`, and should be saved with integer values starting at zero for each object class, i.e., 0, 1, 2,...**.
 
 If you don't want to train a segmentation-guided model, you can skip this step.
 
@@ -156,7 +156,7 @@ Note that the code will automatically use the checkpoint from the training run, 
     --segmentation_guided \
     --num_segmentation_classes {N_SEGMENTATION_CLASSES} \
 ```
-This will generate images conditioned on the segmentation masks in `MASK_FOLDER/all/test`.
+This will generate images conditioned on the segmentation masks in `MASK_FOLDER/all/test`. Segmentation masks should be saved as image files (e.g., `.png`) with integer values starting at zero for each object class, i.e., 0, 1, 2.
 
 ## Additional Options/Config
 Our code has further options for training and evaluation; run `python3 main.py --help` for more information. Further settings still can be changed under `class TrainingConfig:` in `training.py` (some of which are exposed as command-line options for `main.py`, and some of which are not).
