@@ -150,9 +150,18 @@ def main(
             transforms.Resize((config.image_size, config.image_size)),
             # transforms.RandomHorizontalFlip(), # flipping wouldn't result in realistic images
             transforms.ToTensor(),
-            transforms.Normalize([0.5], [0.5]),
+            transforms.Normalize(
+                num_img_channels * [0.5], 
+                num_img_channels * [0.5]),
         ]
     )
+
+    if num_img_channels == 1:
+        PIL_image_type = "L"
+    elif num_img_channels == 3:
+        PIL_image_type = "RGB"
+    else:
+        raise ValueError("only 1 or 3 image channels supported")
 
     if config.segmentation_guided:
         preprocess_segmentation = transforms.Compose(
@@ -162,7 +171,7 @@ def main(
         ]
     )
         def transform(examples):
-            images = [preprocess(image.convert("L")) for image in examples["image"]]
+            images = [preprocess(image.convert(PIL_image_type)) for image in examples["image"]]
             images_filenames = examples["image_filename"]
 
             segs = {}
@@ -172,7 +181,7 @@ def main(
             return {**{"images": images}, **segs, **{"image_filenames": images_filenames}}
     else:
         def transform(examples):
-            images = [preprocess(image.convert("L")) for image in examples["image"]]
+            images = [preprocess(image.convert(PIL_image_type)) for image in examples["image"]]
             #images_filenames = examples["image_filename"]
             #return {"images": images, "image_filenames": images_filenames}
             return {"images": images}
