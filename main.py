@@ -79,7 +79,7 @@ def main(
     load_images_as_np_arrays = False
     if num_img_channels not in [1, 3]:
         load_images_as_np_arrays = True
-        print("image channels not 1 or 3, loading images as np arrays")
+        print("image channels not 1 or 3, attempting to load images as np arrays...")
 
     if config.segmentation_guided:
         seg_types = os.listdir(seg_dir)
@@ -184,17 +184,11 @@ def main(
         PIL_image_type = None
 
     if config.segmentation_guided:
-        if not load_images_as_np_arrays:
-            preprocess_segmentation = transforms.Compose(
-            [
-                transforms.Resize((config.image_size, config.image_size), interpolation=transforms.InterpolationMode.NEAREST),
-                transforms.ToTensor(),
-            ]
-        )
-        else:
-            preprocess_segmentation = transforms.Compose(
-            [
-            ]
+        preprocess_segmentation = transforms.Compose(
+        [
+            transforms.Resize((config.image_size, config.image_size), interpolation=transforms.InterpolationMode.NEAREST),
+            transforms.ToTensor(),
+        ]
         )
 
         def transform(examples):
