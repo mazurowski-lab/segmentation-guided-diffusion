@@ -121,12 +121,13 @@ def main(
         # load the images
         if not load_images_as_np_arrays:
             dataset_train = dataset_train.cast_column("image", datasets.Image())
-            for seg_type in seg_types:
-                dataset_train = dataset_train.cast_column("seg_{}".format(seg_type), datasets.Image())
-
             dataset_eval = dataset_eval.cast_column("image", datasets.Image())
-            for seg_type in seg_types:
-                dataset_eval = dataset_eval.cast_column("seg_{}".format(seg_type), datasets.Image())
+
+        for seg_type in seg_types:
+            dataset_train = dataset_train.cast_column("seg_{}".format(seg_type), datasets.Image())
+
+        for seg_type in seg_types:
+            dataset_eval = dataset_eval.cast_column("seg_{}".format(seg_type), datasets.Image())
 
     else:
         # make sure the images are matched to the segmentation masks
