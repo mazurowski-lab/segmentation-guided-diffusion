@@ -5,6 +5,8 @@ from argparse import ArgumentParser
 import torch
 from torch import nn
 from torchvision import transforms
+import torch.nn.functional as F
+import numpy as np
 
 # HF imports
 import diffusers
@@ -74,6 +76,11 @@ def main(
         use_ablated_segmentations=use_ablated_segmentations
     )
 
+    load_images_as_np_arrays = False
+    if num_img_channels not in [1, 3]:
+        load_images_as_np_arrays = True
+        print("image channels not 1 or 3, loading images as np arrays")
+
     if config.segmentation_guided:
         seg_types = os.listdir(seg_dir)
 
@@ -112,13 +119,14 @@ def main(
         dataset_eval = datasets.Dataset.from_dict(dset_dict_eval)
 
         # load the images
-        dataset_train = dataset_train.cast_column("image", datasets.Image())
-        for seg_type in seg_types:
-            dataset_train = dataset_train.cast_column("seg_{}".format(seg_type), datasets.Image())
+        if not load_images_as_np_arrays:
+            dataset_train = dataset_train.cast_column("image", datasets.Image())
+            for seg_type in seg_types:
+                dataset_train = dataset_train.cast_column("seg_{}".format(seg_type), datasets.Image())
 
-        dataset_eval = dataset_eval.cast_column("image", datasets.Image())
-        for seg_type in seg_types:
-            dataset_eval = dataset_eval.cast_column("seg_{}".format(seg_type), datasets.Image())
+            dataset_eval = dataset_eval.cast_column("image", datasets.Image())
+            for seg_type in seg_types:
+                dataset_eval = dataset_eval.cast_column("seg_{}".format(seg_type), datasets.Image())
 
     else:
         # make sure the images are matched to the segmentation masks
@@ -141,37 +149,61 @@ def main(
         )
 
         # load the images
-        dataset_train = dataset_train.cast_column("image", datasets.Image())
-        dataset_eval = dataset_eval.cast_column("image", datasets.Image())
+        if not load_images_as_np_arrays:
+            dataset_train = dataset_train.cast_column("image", datasets.Image())
+            dataset_eval = dataset_eval.cast_column("image", datasets.Image())
 
     # training set preprocessing
-    preprocess = transforms.Compose(
-        [
-            transforms.Resize((config.image_size, config.image_size)),
-            # transforms.RandomHorizontalFlip(), # flipping wouldn't result in realistic images
-            transforms.ToTensor(),
-            transforms.Normalize(
-                num_img_channels * [0.5], 
-                num_img_channels * [0.5]),
-        ]
-    )
+    if not load_images_as_np_arrays:
+        preprocess = transforms.Compose(
+            [
+                transforms.Resize((config.image_size, config.image_size)),
+                # transforms.RandomHorizontalFlip(), # flipping wouldn't result in realistic images
+                transforms.ToTensor(),
+                transforms.Normalize(
+                    num_img_channels * [0.5], 
+                    num_img_channels * [0.5]),
+            ]
+        )
+    else:
+        # resizing will be done in the transform function
+        preprocess = transforms.Compose(
+            [
+                transforms.Normalize(
+                    num_img_channels * [0.5], 
+                    num_img_channels * [0.5]),
+            ]
+        )
 
     if num_img_channels == 1:
         PIL_image_type = "L"
     elif num_img_channels == 3:
         PIL_image_type = "RGB"
     else:
-        raise ValueError("only 1 or 3 image channels supported")
+        PIL_image_type = None
 
     if config.segmentation_guided:
-        preprocess_segmentation = transforms.Compose(
-        [
-            transforms.Resize((config.image_size, config.image_size), interpolation=transforms.InterpolationMode.NEAREST),
-            transforms.ToTensor(),
-        ]
-    )
+        if not load_images_as_np_arrays:
+            preprocess_segmentation = transforms.Compose(
+            [
+                transforms.Resize((config.image_size, config.image_size), interpolation=transforms.InterpolationMode.NEAREST),
+                transforms.ToTensor(),
+            ]
+        )
+        else:
+            preprocess_segmentation = transforms.Compose(
+            [
+            ]
+        )
+
         def transform(examples):
-            images = [preprocess(image.convert(PIL_image_type)) for image in examples["image"]]
+            if not load_images_as_np_arrays:
+                images = [preprocess(image.convert(PIL_image_type)) for image in examples["image"]]
+            else:
+                # load np array as torch tensor, resize, then normalize
+                images = [
+                    preprocess(F.interpolate(torch.tensor(np.load(image)).unsqueeze(0), size=(config.image_size, config.image_size))) for image in examples["image"]
+                    ]
             images_filenames = examples["image_filename"]
 
             segs = {}
@@ -181,7 +213,12 @@ def main(
             return {**{"images": images}, **segs, **{"image_filenames": images_filenames}}
     else:
         def transform(examples):
-            images = [preprocess(image.convert(PIL_image_type)) for image in examples["image"]]
+            if not load_images_as_np_arrays:
+                images = [preprocess(image.convert(PIL_image_type)) for image in examples["image"]]
+            else:
+                images = [
+                    preprocess(F.interpolate(torch.tensor(np.load(image)).unsqueeze(0), size=(config.image_size, config.image_size))) for image in examples["image"]
+                    ]
             #images_filenames = examples["image_filename"]
             #return {"images": images, "image_filenames": images_filenames}
             return {"images": images}
