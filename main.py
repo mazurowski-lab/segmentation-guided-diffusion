@@ -197,7 +197,7 @@ def main(
             else:
                 # load np array as torch tensor, resize, then normalize
                 images = [
-                    preprocess(F.interpolate(torch.tensor(np.load(image)).unsqueeze(0), size=(config.image_size, config.image_size))) for image in examples["image"]
+                    preprocess(F.interpolate(torch.tensor(np.load(image)).unsqueeze(0).float(), size=(config.image_size, config.image_size)).squeeze()) for image in examples["image"]
                     ]
             images_filenames = examples["image_filename"]
 
@@ -212,7 +212,7 @@ def main(
                 images = [preprocess(image.convert(PIL_image_type)) for image in examples["image"]]
             else:
                 images = [
-                    preprocess(F.interpolate(torch.tensor(np.load(image)).unsqueeze(0), size=(config.image_size, config.image_size))) for image in examples["image"]
+                    preprocess(F.interpolate(torch.tensor(np.load(image)).unsqueeze(0).float(), size=(config.image_size, config.image_size)).squeeze()) for image in examples["image"]
                     ]
             #images_filenames = examples["image_filename"]
             #return {"images": images, "image_filenames": images_filenames}
