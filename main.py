@@ -48,6 +48,7 @@ def main(
     output_dir = '{}-{}-{}'.format(model_type.lower(), dataset, img_size)  # the model namy locally and on the HF Hub
     if segmentation_guided:
         output_dir += "-segguided"
+        assert seg_dir is not None, "must provide segmentation directory for segmentation guided training/sampling"
 
     if use_ablated_segmentations or eval_mask_removal or eval_blank_mask:
         output_dir += "-ablated"
@@ -56,6 +57,7 @@ def main(
 
     if mode == "train":
         evalset_name = "val"
+        assert img_dir is not None, "must provide image directory for training"
     elif "eval" in mode:
         evalset_name = "test"
 
@@ -84,42 +86,61 @@ def main(
     if config.segmentation_guided:
         seg_types = os.listdir(seg_dir)
 
-        # make sure the images are matched to the segmentation masks
-        img_dir_train = os.path.join(img_dir, "train")
-        img_paths_train = [os.path.join(img_dir_train, f) for f in os.listdir(img_dir_train)]
-        seg_paths_train = {} 
-        for seg_type in seg_types:
-            seg_paths_train[seg_type] = [os.path.join(seg_dir, seg_type, "train", f) for f in os.listdir(img_dir_train)]
-        # breast_seg_paths_train = [os.path.join(breast_seg_dir, "train", f) for f in os.listdir(img_dir_train)]
-        # dv_seg_paths_train = [os.path.join(dv_seg_dir, "train", f) for f in os.listdir(img_dir_train)]
+        if img_dir is not None: 
+            # make sure the images are matched to the segmentation masks
+            img_dir_train = os.path.join(img_dir, "train")
+            img_paths_train = [os.path.join(img_dir_train, f) for f in os.listdir(img_dir_train)]
+            seg_paths_train = {} 
+            for seg_type in seg_types:
+                seg_paths_train[seg_type] = [os.path.join(seg_dir, seg_type, "train", f) for f in os.listdir(img_dir_train)]
+        else:
+            for seg_type in seg_types:
+                seg_paths_train[seg_type] = [os.path.join(seg_dir, seg_type, "train", f) for f in os.listdir(os.path.join(seg_dir, seg_type, "train"))]
 
-        img_dir_eval = os.path.join(img_dir, evalset_name)
-        img_paths_eval = [os.path.join(img_dir_eval, f) for f in os.listdir(img_dir_eval)]
-        seg_paths_eval = {}
-        for seg_type in seg_types:
-            seg_paths_eval[seg_type] = [os.path.join(seg_dir, seg_type, evalset_name, f) for f in os.listdir(img_dir_eval)]
-        # breast_seg_paths_eval = [os.path.join(breast_seg_dir, evalset_name, f) for f in os.listdir(img_dir_eval)]
-        # dv_seg_paths_eval = [os.path.join(dv_seg_dir, evalset_name, f) for f in os.listdir(img_dir_eval)]
+        if img_dir is not None: 
+            img_dir_eval = os.path.join(img_dir, evalset_name)
+            img_paths_eval = [os.path.join(img_dir_eval, f) for f in os.listdir(img_dir_eval)]
+            seg_paths_eval = {}
+            for seg_type in seg_types:
+                seg_paths_eval[seg_type] = [os.path.join(seg_dir, seg_type, evalset_name, f) for f in os.listdir(img_dir_eval)]
+        else:
+            for seg_type in seg_types:
+                seg_paths_eval[seg_type] = [os.path.join(seg_dir, seg_type, evalset_name, f) for f in os.listdir(os.path.join(seg_dir, seg_type, evalset_name))]
 
-        dset_dict_train = {
-                **{"image": img_paths_train},
-                **{"seg_{}".format(seg_type): seg_paths_train[seg_type] for seg_type in seg_types}
-             }
-        
-        dset_dict_eval = {
-                **{"image": img_paths_eval},
-                **{"seg_{}".format(seg_type): seg_paths_eval[seg_type] for seg_type in seg_types}
+        if img_dir is not None:
+            dset_dict_train = {
+                    **{"image": img_paths_train},
+                    **{"seg_{}".format(seg_type): seg_paths_train[seg_type] for seg_type in seg_types}
+                }
+            
+            dset_dict_eval = {
+                    **{"image": img_paths_eval},
+                    **{"seg_{}".format(seg_type): seg_paths_eval[seg_type] for seg_type in seg_types}
+            }
+        else:
+            dset_dict_train = {
+                    **{"seg_{}".format(seg_type): seg_paths_train[seg_type] for seg_type in seg_types}
+                }
+            
+            dset_dict_eval = {
+                    **{"seg_{}".format(seg_type): seg_paths_eval[seg_type] for seg_type in seg_types}
             }
 
-        # add image filenames to dataset
-        dset_dict_train["image_filename"] = [os.path.basename(f) for f in dset_dict_train["image"]]
-        dset_dict_eval["image_filename"] = [os.path.basename(f) for f in dset_dict_eval["image"]]
+
+        if img_dir is not None:
+            # add image filenames to dataset
+            dset_dict_train["image_filename"] = [os.path.basename(f) for f in dset_dict_train["image"]]
+            dset_dict_eval["image_filename"] = [os.path.basename(f) for f in dset_dict_eval["image"]]
+        else:
+            # use segmentation filenames as image filenames
+            dset_dict_train["image_filename"] = [os.path.basename(f) for f in dset_dict_train["seg_{}".format(seg_types[0])]]
+            dset_dict_eval["image_filename"] = [os.path.basename(f) for f in dset_dict_eval["seg_{}".format(seg_types[0])]]
 
         dataset_train = datasets.Dataset.from_dict(dset_dict_train)
         dataset_eval = datasets.Dataset.from_dict(dset_dict_eval)
 
         # load the images
-        if not load_images_as_np_arrays:
+        if not load_images_as_np_arrays and img_dir is not None:
             dataset_train = dataset_train.cast_column("image", datasets.Image())
             dataset_eval = dataset_eval.cast_column("image", datasets.Image())
 
@@ -130,29 +151,29 @@ def main(
             dataset_eval = dataset_eval.cast_column("seg_{}".format(seg_type), datasets.Image())
 
     else:
-        # make sure the images are matched to the segmentation masks
-        img_dir_train = os.path.join(img_dir, "train")
-        img_paths_train = [os.path.join(img_dir_train, f) for f in os.listdir(img_dir_train)]
+        if img_dir is not None:
+            img_dir_train = os.path.join(img_dir, "train")
+            img_paths_train = [os.path.join(img_dir_train, f) for f in os.listdir(img_dir_train)]
 
-        img_dir_eval = os.path.join(img_dir, evalset_name)
-        img_paths_eval = [os.path.join(img_dir_eval, f) for f in os.listdir(img_dir_eval)]
+            img_dir_eval = os.path.join(img_dir, evalset_name)
+            img_paths_eval = [os.path.join(img_dir_eval, f) for f in os.listdir(img_dir_eval)]
 
-        dataset_train = datasets.Dataset.from_dict(
-            {
-                **{"image": img_paths_train},
-            }
-        )
+            dataset_train = datasets.Dataset.from_dict(
+                {
+                    **{"image": img_paths_train},
+                }
+            )
 
-        dataset_eval = datasets.Dataset.from_dict(
-            {
-                **{"image": img_paths_eval},
-            }
-        )
+            dataset_eval = datasets.Dataset.from_dict(
+                {
+                    **{"image": img_paths_eval},
+                }
+            )
 
-        # load the images
-        if not load_images_as_np_arrays:
-            dataset_train = dataset_train.cast_column("image", datasets.Image())
-            dataset_eval = dataset_eval.cast_column("image", datasets.Image())
+            # load the images
+            if not load_images_as_np_arrays:
+                dataset_train = dataset_train.cast_column("image", datasets.Image())
+                dataset_eval = dataset_eval.cast_column("image", datasets.Image())
 
     # training set preprocessing
     if not load_images_as_np_arrays:
@@ -192,31 +213,39 @@ def main(
         )
 
         def transform(examples):
-            if not load_images_as_np_arrays:
-                images = [preprocess(image.convert(PIL_image_type)) for image in examples["image"]]
-            else:
-                # load np array as torch tensor, resize, then normalize
-                images = [
-                    preprocess(F.interpolate(torch.tensor(np.load(image)).unsqueeze(0).float(), size=(config.image_size, config.image_size)).squeeze()) for image in examples["image"]
-                    ]
+            if img_dir is not None:
+                if not load_images_as_np_arrays:
+                    images = [preprocess(image.convert(PIL_image_type)) for image in examples["image"]]
+                else:
+                    # load np array as torch tensor, resize, then normalize
+                    images = [
+                        preprocess(F.interpolate(torch.tensor(np.load(image)).unsqueeze(0).float(), size=(config.image_size, config.image_size)).squeeze()) for image in examples["image"]
+                        ]
+
             images_filenames = examples["image_filename"]
 
             segs = {}
             for seg_type in seg_types:
                 segs["seg_{}".format(seg_type)] = [preprocess_segmentation(image.convert("L")) for image in examples["seg_{}".format(seg_type)]]
             # return {"images": images, "seg_breast": seg_breast, "seg_dv": seg_dv}
-            return {**{"images": images}, **segs, **{"image_filenames": images_filenames}}
+            if img_dir is not None:
+                return {**{"images": images}, **segs, **{"image_filenames": images_filenames}}
+            else:
+                return {**segs, **{"image_filenames": images_filenames}}
     else:
         def transform(examples):
-            if not load_images_as_np_arrays:
-                images = [preprocess(image.convert(PIL_image_type)) for image in examples["image"]]
+            if img_dir is not None:
+                if not load_images_as_np_arrays:
+                    images = [preprocess(image.convert(PIL_image_type)) for image in examples["image"]]
+                else:
+                    images = [
+                        preprocess(F.interpolate(torch.tensor(np.load(image)).unsqueeze(0).float(), size=(config.image_size, config.image_size)).squeeze()) for image in examples["image"]
+                        ]
+                images_filenames = examples["image_filename"]
+                #return {"images": images, "image_filenames": images_filenames}
+                return {"images": images, **{"image_filenames": images_filenames}}
             else:
-                images = [
-                    preprocess(F.interpolate(torch.tensor(np.load(image)).unsqueeze(0).float(), size=(config.image_size, config.image_size)).squeeze()) for image in examples["image"]
-                    ]
-            #images_filenames = examples["image_filename"]
-            #return {"images": images, "image_filenames": images_filenames}
-            return {"images": images}
+                return {}
 
     dataset_train.set_transform(transform)
     dataset_eval.set_transform(transform)
@@ -346,8 +375,8 @@ if __name__ == "__main__":
     parser.add_argument('--img_size', type=int, default=256)
     parser.add_argument('--num_img_channels', type=int, default=1)
     parser.add_argument('--dataset', type=str, default="breast_mri")
-    parser.add_argument('--img_dir', type=str, default="../../breast_mri_data/slicesubset")
-    parser.add_argument('--seg_dir', type=str, default="../../breast_mri_data/prior_work_1k/segmentations2D")
+    parser.add_argument('--img_dir', type=str, default=None)
+    parser.add_argument('--seg_dir', type=str, default=None)
     parser.add_argument('--model_type', type=str, default="DDPM")
     parser.add_argument('--segmentation_guided', action='store_true', help='use segmentation guided training/sampling?')
     parser.add_argument('--segmentation_channel_mode', type=str, default="single", help='single == all segmentations in one channel, multi == each segmentation in its own channel')

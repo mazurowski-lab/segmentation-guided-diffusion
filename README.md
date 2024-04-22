@@ -145,7 +145,6 @@ CUDA_VISIBLE_DEVICES={DEVICES} python3 main.py \
     --img_size 256 \
     --num_img_channels {NUM_IMAGE_CHANNELS} \
     --dataset {DATASET_NAME} \
-    --img_dir {DATA_FOLDER} \
     --eval_batch_size 8 \
     --eval_sample_size 100
 ```
