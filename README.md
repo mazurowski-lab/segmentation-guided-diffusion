@@ -1,4 +1,4 @@
-# Easy Segmentation-Guided Diffusion Models
+# Easy and Precise Segmentation-Guided Diffusion Models
 
 #### By [Nicholas Konz](https://nickk124.github.io/), [Yuwen Chen](https://scholar.google.com/citations?user=61s49p0AAAAJ&hl=en), [Haoyu Dong](https://scholar.google.com/citations?user=eZVEUCIAAAAJ&hl=en) and [Maciej Mazurowski](https://sites.duke.edu/mazurowski/).
 
