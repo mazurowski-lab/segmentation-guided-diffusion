@@ -44,13 +44,13 @@ First, run `pip3 install -r requirements.txt` to install the required packages.
 
 ## 2a) Use Pre-Trained Models
 
-We provide pre-trained model checkpoints from our paper for the [Duke Breast MRI](https://www.cancerimagingarchive.net/collection/duke-breast-cancer-mri/) and [CT Organ](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=61080890) datasets, [here](https://drive.google.com/drive/folders/1OaOGBLfpUFe_tmpvZGEe2Mv2gow32Y8u). These include:
+We provide pre-trained model checkpoints (`.safetensor` files) and config (`.json`) files from our paper for the [Duke Breast MRI](https://www.cancerimagingarchive.net/collection/duke-breast-cancer-mri/) and [CT Organ](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=61080890) datasets, [here](https://drive.google.com/drive/folders/1OaOGBLfpUFe_tmpvZGEe2Mv2gow32Y8u). These include:
 
 1. Segmentation-Conditional Models, trained without mask ablation.
 2. Segmentation-Conditional Models, trained with mask ablation.
 3. Unconditional (standard) Models.
 
-Once you've downloaded your model of choice, please put it in a directory called `{NAME}/unet`, where `NAME` is the model checkpoint's filename without the `.safetensors` ending, to use it with our evaluation code. Next, you can proceed to the **Evaluation/Sampling** section below to generate images from these models.
+Once you've downloaded the checkpoint and config file for your model of choice, please put both files in a directory called `{NAME}/unet`, where `NAME` is the model checkpoint's filename without the `.safetensors` ending, to use it with our evaluation code. Next, you can proceed to the **Evaluation/Sampling** section below to generate images from these models.
 
 ## 2b) Train Your Own Models
 
