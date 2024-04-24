@@ -158,17 +158,20 @@ def main(
             img_dir_eval = os.path.join(img_dir, evalset_name)
             img_paths_eval = [os.path.join(img_dir_eval, f) for f in os.listdir(img_dir_eval)]
 
-            dataset_train = datasets.Dataset.from_dict(
-                {
-                    **{"image": img_paths_train},
+            dset_dict_train = {
+                    **{"image": img_paths_train}
                 }
-            )
 
-            dataset_eval = datasets.Dataset.from_dict(
-                {
-                    **{"image": img_paths_eval},
+            dset_dict_eval = {
+                    **{"image": img_paths_eval}
                 }
-            )
+
+            # add image filenames to dataset
+            dset_dict_train["image_filename"] = [os.path.basename(f) for f in dset_dict_train["image"]]
+            dset_dict_eval["image_filename"] = [os.path.basename(f) for f in dset_dict_eval["image"]]
+
+            dataset_train = datasets.Dataset.from_dict(dset_dict_train)
+            dataset_eval = datasets.Dataset.from_dict(dset_dict_eval)
 
             # load the images
             if not load_images_as_np_arrays:
@@ -275,7 +278,7 @@ def main(
     model = diffusers.UNet2DModel(
         sample_size=config.image_size,  # the target image resolution
         in_channels=in_channels,  # the number of input channels, 3 for RGB images
-        out_channels=1,  # the number of output channels
+        out_channels=num_img_channels,  # the number of output channels
         layers_per_block=2,  # how many ResNet layers to use per UNet block
         block_out_channels=(128, 128, 256, 256, 512, 512),  # the number of output channes for each UNet block
         down_block_types=(
