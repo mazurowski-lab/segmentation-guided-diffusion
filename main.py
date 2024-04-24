@@ -158,17 +158,20 @@ def main(
             img_dir_eval = os.path.join(img_dir, evalset_name)
             img_paths_eval = [os.path.join(img_dir_eval, f) for f in os.listdir(img_dir_eval)]
 
-            dataset_train = datasets.Dataset.from_dict(
-                {
-                    **{"image": img_paths_train},
+            dset_dict_train = {
+                    **{"image": img_paths_train}
                 }
-            )
 
-            dataset_eval = datasets.Dataset.from_dict(
-                {
-                    **{"image": img_paths_eval},
+            dset_dict_eval = {
+                    **{"image": img_paths_eval}
                 }
-            )
+
+            # add image filenames to dataset
+            dset_dict_train["image_filename"] = [os.path.basename(f) for f in dset_dict_train["image"]]
+            dset_dict_eval["image_filename"] = [os.path.basename(f) for f in dset_dict_eval["image"]]
+
+            dataset_train = datasets.Dataset.from_dict(dset_dict_train)
+            dataset_eval = datasets.Dataset.from_dict(dset_dict_eval)
 
             # load the images
             if not load_images_as_np_arrays:
@@ -233,8 +236,8 @@ def main(
             else:
                 return {**segs, **{"image_filenames": images_filenames}}
     else:
-        def transform(examples):
-            if img_dir is not None:
+        if img_dir is not None:
+            def transform(examples):
                 if not load_images_as_np_arrays:
                     images = [preprocess(image.convert(PIL_image_type)) for image in examples["image"]]
                 else:
@@ -244,23 +247,30 @@ def main(
                 images_filenames = examples["image_filename"]
                 #return {"images": images, "image_filenames": images_filenames}
                 return {"images": images, **{"image_filenames": images_filenames}}
-            else:
-                return {}
+        
+            dataset_train.set_transform(transform)
+            dataset_eval.set_transform(transform)
 
-    dataset_train.set_transform(transform)
-    dataset_eval.set_transform(transform)
-
-    train_dataloader = torch.utils.data.DataLoader(
-            dataset_train, 
-            batch_size=config.train_batch_size, 
-            shuffle=True
-            )
-
-    eval_dataloader = torch.utils.data.DataLoader(
-            dataset_eval, 
-            batch_size=config.eval_batch_size, 
+    if ((img_dir is None) and (not segmentation_guided)):
+        train_dataloader = None
+        # just make placeholder dataloaders to iterate through when sampling from uncond model
+        eval_dataloader = torch.utils.data.DataLoader(
+            torch.utils.data.TensorDataset(torch.zeros(config.eval_batch_size, num_img_channels, config.image_size, config.image_size)),
+            batch_size=config.eval_batch_size,
             shuffle=eval_shuffle_dataloader
-            )
+        )
+    else:
+        train_dataloader = torch.utils.data.DataLoader(
+                dataset_train, 
+                batch_size=config.train_batch_size, 
+                shuffle=True
+                )
+
+        eval_dataloader = torch.utils.data.DataLoader(
+                dataset_eval, 
+                batch_size=config.eval_batch_size, 
+                shuffle=eval_shuffle_dataloader
+                )
 
     # define the model
     in_channels = num_img_channels
@@ -275,7 +285,7 @@ def main(
     model = diffusers.UNet2DModel(
         sample_size=config.image_size,  # the target image resolution
         in_channels=in_channels,  # the number of input channels, 3 for RGB images
-        out_channels=1,  # the number of output channels
+        out_channels=num_img_channels,  # the number of output channels
         layers_per_block=2,  # how many ResNet layers to use per UNet block
         block_out_channels=(128, 128, 256, 256, 512, 512),  # the number of output channes for each UNet block
         down_block_types=(
@@ -312,15 +322,15 @@ def main(
     elif model_type == "DDIM":
         noise_scheduler = diffusers.DDIMScheduler(num_train_timesteps=1000)
 
-    # training setup
-    optimizer = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
-    lr_scheduler = get_cosine_schedule_with_warmup(
-        optimizer=optimizer,
-        num_warmup_steps=config.lr_warmup_steps,
-        num_training_steps=(len(train_dataloader) * config.num_epochs),
-    )
-
     if mode == "train":
+        # training setup
+        optimizer = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
+        lr_scheduler = get_cosine_schedule_with_warmup(
+            optimizer=optimizer,
+            num_warmup_steps=config.lr_warmup_steps,
+            num_training_steps=(len(train_dataloader) * config.num_epochs),
+        )
+
         # train
         train_loop(
             config, 

@@ -50,7 +50,11 @@ We provide pre-trained model checkpoints (`.safetensor` files) and config (`.jso
 2. Segmentation-Conditional Models, trained with mask ablation.
 3. Unconditional (standard) Models.
 
-Once you've downloaded the checkpoint and config file for your model of choice, please put both files in a directory called `{NAME}/unet`, where `NAME` is the model checkpoint's filename without the `.safetensors` ending, to use it with our evaluation code. Next, you can proceed to the **Evaluation/Sampling** section below to generate images from these models.
+Once you've downloaded the checkpoint and config file for your model of choice, please:
+1. Put both files in a directory called `{NAME}/unet`, where `NAME` is the model checkpoint's filename without the `.safetensors` ending, to use it with our evaluation code. 
+2. Rename the checkpoint file to `diffusion_pytorch_model.safetensors` and the config file to config.json`.
+
+Next, you can proceed to the **Evaluation/Sampling** section below to generate images from these models.
 
 ## 2b) Train Your Own Models
 
