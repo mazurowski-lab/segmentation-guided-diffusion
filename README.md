@@ -54,7 +54,7 @@ Once you've downloaded the checkpoint and config file for your model of choice, 
 1. Put both files in a directory called `{NAME}/unet`, where `NAME` is the model checkpoint's filename without the `.safetensors` ending, to use it with our evaluation code. 
 2. Rename the checkpoint file to `diffusion_pytorch_model.safetensors` and the config file to `config.json`.
 
-Next, you can proceed to the **Evaluation/Sampling** section below to generate images from these models.
+Next, you can proceed to the [**Evaluation/Sampling**](https://github.com/mazurowski-lab/segmentation-guided-diffusion#3-evaluationsampling) section below to generate images from these models.
 
 ## 2b) Train Your Own Models
 
