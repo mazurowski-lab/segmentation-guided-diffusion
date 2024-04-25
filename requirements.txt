@@ -1,8 +1,8 @@
-torch
-torchvision
-numpy
-matplotlib
-Pillow
-diffusers
-datasets
-tqdm
+torch==2.1.2
+torchvision=0.16.2
+numpy==1.26.1
+matplotlib==3.8.0
+Pillow==10.0.1
+diffusers==0.21.4
+datasets==2.14.5
+tqdm==4.66.1
