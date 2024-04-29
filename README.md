@@ -40,7 +40,7 @@ Please cite our paper if you use our code or reference our work:
 ```
 
 ## 1) Package Installation
-First, run `pip3 install -r requirements.txt` to install the required packages.
+This codebase was created with Python 3.11. First, install PyTorch for your computer's CUDA version (check it by running `nvidia-smi` if you're not sure) according to the provided command at https://pytorch.org/get-started/locally/; this codebase was made with `torch==2.1.2` and `torchvision==0.16.2` on CUDA 12.2. Next, run `pip3 install -r requirements.txt` to install the required packages.
 
 ## 2a) Use Pre-Trained Models
 
