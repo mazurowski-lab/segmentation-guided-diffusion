@@ -235,6 +235,10 @@ def main(
                 return {**{"images": images}, **segs, **{"image_filenames": images_filenames}}
             else:
                 return {**segs, **{"image_filenames": images_filenames}}
+            
+        dataset_train.set_transform(transform)
+        dataset_eval.set_transform(transform)
+
     else:
         if img_dir is not None:
             def transform(examples):
