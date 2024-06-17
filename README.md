@@ -5,6 +5,9 @@
 [![arXiv Paper](https://img.shields.io/badge/arXiv-2402.05210-orange.svg?style=flat)](https://arxiv.org/abs/2402.05210)
 
 
+## NEWS: our paper was accepted to MICCAI 2024!
+
+
 <img src='https://github.com/mazurowski-lab/segmentation-guided-diffusion/blob/main/figs/teaser.png' width='100%'>
 
 This is the code for our paper [**Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models**](https://arxiv.org/abs/2402.05210), where we introduce a simple yet powerful training procedure for conditioning image-generating diffusion models on (possibly incomplete) multiclass segmentation masks. 
@@ -29,13 +32,11 @@ Thank you to Hugging Face's awesome [Diffusers](https://github.com/huggingface/d
 
 Please cite our paper if you use our code or reference our work:
 ```bib
-@misc{konz2024anatomicallycontrollable,
-      title={Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models}, 
-      author={Nicholas Konz and Yuwen Chen and Haoyu Dong and Maciej A. Mazurowski},
-      year={2024},
-      eprint={2402.05210},
-      archivePrefix={arXiv},
-      primaryClass={eess.IV}
+@inproceedings{konz2022intrinsic,
+  title={Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models},
+  author={Nicholas Konz and Yuwen Chen and Haoyu Dong and Maciej A. Mazurowski},
+  booktitle={International Conference on Medical Image Computing and Computer-Assisted Intervention},
+  year={2024}
 }
 ```
 
