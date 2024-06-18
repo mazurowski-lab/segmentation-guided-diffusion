@@ -85,22 +85,24 @@ def main(
 
     if config.segmentation_guided:
         seg_types = os.listdir(seg_dir)
+        seg_paths_train = {} 
+        seg_paths_eval = {}
 
+        # train set
         if img_dir is not None: 
             # make sure the images are matched to the segmentation masks
             img_dir_train = os.path.join(img_dir, "train")
             img_paths_train = [os.path.join(img_dir_train, f) for f in os.listdir(img_dir_train)]
-            seg_paths_train = {} 
             for seg_type in seg_types:
                 seg_paths_train[seg_type] = [os.path.join(seg_dir, seg_type, "train", f) for f in os.listdir(img_dir_train)]
         else:
             for seg_type in seg_types:
                 seg_paths_train[seg_type] = [os.path.join(seg_dir, seg_type, "train", f) for f in os.listdir(os.path.join(seg_dir, seg_type, "train"))]
 
+        # eval set
         if img_dir is not None: 
             img_dir_eval = os.path.join(img_dir, evalset_name)
             img_paths_eval = [os.path.join(img_dir_eval, f) for f in os.listdir(img_dir_eval)]
-            seg_paths_eval = {}
             for seg_type in seg_types:
                 seg_paths_eval[seg_type] = [os.path.join(seg_dir, seg_type, evalset_name, f) for f in os.listdir(img_dir_eval)]
         else:
