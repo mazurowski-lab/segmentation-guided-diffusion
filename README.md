@@ -32,7 +32,7 @@ Thank you to Hugging Face's awesome [Diffusers](https://github.com/huggingface/d
 
 Please cite our paper if you use our code or reference our work:
 ```bib
-@inproceedings{konz2022intrinsic,
+@inproceedings{konz2024segguideddiffusion,
   title={Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models},
   author={Nicholas Konz and Yuwen Chen and Haoyu Dong and Maciej A. Mazurowski},
   booktitle={International Conference on Medical Image Computing and Computer-Assisted Intervention},
