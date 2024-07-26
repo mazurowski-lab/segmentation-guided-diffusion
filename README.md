@@ -165,6 +165,9 @@ This will generate images conditioned on the segmentation masks in `MASK_FOLDER/
 ## Additional Options/Config
 Our code has further options for training and evaluation; run `python3 main.py --help` for more information. Further settings still can be changed under `class TrainingConfig:` in `training.py` (some of which are exposed as command-line options for `main.py`, and some of which are not).
 
+## Troubleshooting
+- Some users have reported a [bug](https://github.com/mazurowski-lab/segmentation-guided-diffusion/issues/11) when the model attempts to save during training and they receive an error of `module 'safetensors' has no attribute 'torch'`. This appears to be an issue with the `diffusers` library itself in some environments, and may be remedied by [this proposed solution](https://github.com/mazurowski-lab/segmentation-guided-diffusion/issues/11#issuecomment-2251890600).
+
 ## Synthetic Paired Breast MRI Dataset Release
 
 <img src='https://github.com/mazurowski-lab/segmentation-guided-diffusion/blob/main/figs/teaser_data.png' width='100%'>
