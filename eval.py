@@ -306,10 +306,10 @@ def evaluate_generation(
             save_image(result_masks, f"{test_dir}/mask_removal_masks.png", normalize=True, 
                     nrow=cols*len(seg_batch.keys()) - 2)
 
-def convert_segbatch_to_multiclass(imgs_shape, segmentations_batch, config, device):
+def convert_segbatch_to_multiclass(shape, segmentations_batch, config, device):
     # NOTE: this generic function assumes that segs don't overlap
     # put all segs on same channel
-    segs = torch.zeros(imgs_shape).to(device)
+    segs = torch.zeros(shape).to(device)
     for k, seg in segmentations_batch.items():
         if k.startswith("seg_"):
             seg = seg.to(device)
@@ -353,7 +353,8 @@ def add_segmentations_to_noise(noisy_images, segmentations_batch, config, device
     """
 
     if config.segmentation_channel_mode == "single":
-        segs = convert_segbatch_to_multiclass(noisy_images.shape, segmentations_batch, config, device) 
+        multiclass_masks_shape = (noisy_images.shape[0], 1, noisy_images.shape[2], noisy_images.shape[3])
+        segs = convert_segbatch_to_multiclass(multiclass_masks_shape, segmentations_batch, config, device) 
         # concat segs to noise
         noisy_images = torch.cat((noisy_images, segs), dim=1)
         
