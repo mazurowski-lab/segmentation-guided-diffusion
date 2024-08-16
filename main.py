@@ -284,9 +284,9 @@ def main(
         assert config.num_segmentation_classes is not None
         assert config.num_segmentation_classes > 1, "must have at least 2 segmentation classes (INCLUDING background)" 
         if config.segmentation_channel_mode == "single":
-            in_channels = 2
+            in_channels += 1
         elif config.segmentation_channel_mode == "multi":
-            in_channels = len(seg_types) + 1
+            in_channels = len(seg_types) + in_channels
 
     model = diffusers.UNet2DModel(
         sample_size=config.image_size,  # the target image resolution
