@@ -2,13 +2,13 @@
 
 #### By [Nicholas Konz](https://nickk124.github.io/), [Yuwen Chen](https://scholar.google.com/citations?user=61s49p0AAAAJ&hl=en), [Haoyu Dong](https://scholar.google.com/citations?user=eZVEUCIAAAAJ&hl=en) and [Maciej Mazurowski](https://sites.duke.edu/mazurowski/).
 
-[![arXiv Paper](https://img.shields.io/badge/arXiv-2402.05210-orange.svg?style=flat)](https://arxiv.org/abs/2402.05210)
-
+arXiv paper link: [![arXiv Paper](https://img.shields.io/badge/arXiv-2402.05210-orange.svg?style=flat)](https://arxiv.org/abs/2402.05210)
 
 ## NEWS: our paper was accepted to MICCAI 2024!
 
-
-<img src='https://github.com/mazurowski-lab/segmentation-guided-diffusion/blob/main/figs/teaser.png' width='100%'>
+<p align="center">
+  <img src='https://github.com/mazurowski-lab/segmentation-guided-diffusion/blob/main/figs/teaser.png' width='50%'>
+</p>
 
 This is the code for our paper [**Anatomically-Controllable Medical Image Generation with Segmentation-Guided Diffusion Models**](https://arxiv.org/abs/2402.05210), where we introduce a simple yet powerful training procedure for conditioning image-generating diffusion models on (possibly incomplete) multiclass segmentation masks. 
 
@@ -16,10 +16,10 @@ This is the code for our paper [**Anatomically-Controllable Medical Image Genera
 
 Our method outperforms existing segmentation-guided image generative models (like [SPADE](https://github.com/NVlabs/SPADE) and [ControlNet](https://github.com/lllyasviel/ControlNet)) in terms of the faithfulness of generated images to input masks, on multiple, multi-modality medical image datasets with a broad range of objects of interest, and is on par for anatomical realism. Our method is also simple to use and train, and its precise pixel-wise obedience to input segmentation masks is due to it always operating in the native image space (it's not a latent diffusion model), which is especially helpful when conditioning on complex and detailed anatomical structures.
 
-Additionally, our optional *ablated-mask training* algorithm allows our model to be conditioned on segmentation masks with missing classes, which is useful for medical images where segmentation masks may be incomplete or noisy. This allows not just for more flexible image generation, but as we show in our paper, adjustable anatomical similarity of images to some real image by taking advantage of the latent space structure of diffusion models. We also used this feature to generate a synthetic paired breast MRI dataset, [shown below](https://github.com/mazurowski-lab/segmentation-guided-diffusion?tab=readme-ov-file#synthetic-paired-breast-mri-dataset-release).
+Additionally, our optional *mask-ablated training* algorithm allows our model to be conditioned on segmentation masks with missing classes, which is useful for medical images where segmentation masks may be incomplete or noisy. This allows not just for more flexible image generation, but as we show in our paper, adjustable anatomical similarity of images to some real image by taking advantage of the latent space structure of diffusion models. We also used this feature to generate a synthetic paired breast MRI dataset, [shown below](https://github.com/mazurowski-lab/segmentation-guided-diffusion?tab=readme-ov-file#synthetic-paired-breast-mri-dataset-release).
 
 **Using this code, you can:**
-1. Train a segmentation-guided (or standard unconditional) diffusion model on your own dataset, with a wide range of options.
+1. Train a segmentation-guided (or standard unconditional) diffusion model on your own dataset, with a wide range of options, including mask-ablated training.
 2. Generate images from these models (or using our provided pre-trained models).
 
 Please follow the steps outlined below to do these. 
@@ -43,7 +43,7 @@ Please cite our paper if you use our code or reference our work:
 ## 1) Package Installation
 This codebase was created with Python 3.11. First, install PyTorch for your computer's CUDA version (check it by running `nvidia-smi` if you're not sure) according to the provided command at https://pytorch.org/get-started/locally/; this codebase was made with `torch==2.1.2` and `torchvision==0.16.2` on CUDA 12.2. Next, run `pip3 install -r requirements.txt` to install the required packages.
 
-## 2a) Use Pre-Trained Models
+## 2a) (optional) Use Pre-Trained Models
 
 We provide pre-trained model checkpoints (`.safetensor` files) and config (`.json`) files from our paper for the [Duke Breast MRI](https://www.cancerimagingarchive.net/collection/duke-breast-cancer-mri/) and [CT Organ](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=61080890) datasets, [here](https://drive.google.com/drive/folders/1OaOGBLfpUFe_tmpvZGEe2Mv2gow32Y8u). These include:
 
@@ -61,7 +61,7 @@ Next, you can proceed to the [**Evaluation/Sampling**](https://github.com/mazuro
 
 ### Data Preparation
 
-Please put your training images in some dataset directory `DATA_FOLDER`, organized into train, validation and test split subdirectories. The images should be in a format that PIL can read (e.g. `.png`, `.jpg`, etc.). For example:
+Please put your training images in some dataset directory `DATA_FOLDER` (with any filenames), organized into train, validation and test split subdirectories. The images should be in a format that PIL can read (e.g. `.png`, `.jpg`, etc.) if they are standard 1- or 3-channel images, and for images with other channel counts use `.npy` NumPy array files. For example:
 
 ``` 
 DATA_FOLDER
@@ -79,9 +79,7 @@ DATA_FOLDER
     └── ...
 ```
 
-If you have segmentation masks, please put them in a similar directory structure in a separate folder `MASK_FOLDER`, with a subdirectory `all` that contains the split subfolders, as shown below. **Each segmentation mask should have the same filename as its corresponding image in `DATA_FOLDER`, and should be saved with integer values starting at zero for each object class, i.e., 0, 1, 2,...**.
-
-If you don't want to train a segmentation-guided model, you can skip this step.
+If you are using a segmentation-guided model, please put your segmentation masks within a similar directory structure in a separate folder `MASK_FOLDER`, with a subdirectory `all` that contains the split subfolders, as shown below. **Each segmentation mask should have the same filename as its corresponding image in `DATA_FOLDER`, and should be saved with integer values starting at zero for each object class, i.e., 0, 1, 2,...**. If you don't want to train a segmentation-guided model, you can skip this step.
 
 ``` 
 MASK_FOLDER
@@ -118,7 +116,7 @@ CUDA_VISIBLE_DEVICES={DEVICES} python3 main.py \
 
 where:
 - `DEVICES` is a comma-separated list of GPU device indices to use (e.g. `0,1,2,3`).
-- `IMAGE_SIZE` and `NUM_IMAGE_CHANNELS` respectively specify the size of the images to train on (e.g. `256`) and the number of channels (1 for greyscale, 3 for RGB).
+- `IMAGE_SIZE` and `NUM_IMAGE_CHANNELS` respectively specify the size of the images to train on (e.g. `256`) and the number of channels (`1` for greyscale, `3` for RGB).
 - `model_type` specifies the type of diffusion model sampling algorithm to evaluate the model with, and can be `DDIM` or `DDPM`.
 - `DATASET_NAME` is some name for your dataset (e.g. `breast_mri`).
 - `DATA_FOLDER` is the path to your dataset directory, as outlined in the previous section.
@@ -162,7 +160,7 @@ Note that the code will automatically use the checkpoint from the training run, 
 ```
 This will generate images conditioned on the segmentation masks in `MASK_FOLDER/all/test`. Segmentation masks should be saved as image files (e.g., `.png`) with integer values starting at zero for each object class, i.e., 0, 1, 2.
 
-## Additional Options/Config
+## Additional Options/Config (learning rate, etc.)
 Our code has further options for training and evaluation; run `python3 main.py --help` for more information. Further settings still can be changed under `class TrainingConfig:` in `training.py` (some of which are exposed as command-line options for `main.py`, and some of which are not).
 
 ## Troubleshooting/Bugfixing
